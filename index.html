@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>印度太阴日（Tithi）精确时间表</title>
+<style>
+/* ========== PPVI 灰阶基座 ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-page: #f5f5f5;
+  --bg-card: rgba(255,255,255,0.75);
+  --glass-border: rgba(255,255,255,0.5);
+  --glass-shadow: 0 8px 32px rgba(0,0,0,0.06);
+  --text-primary: #1a1a1a;
+  --text-secondary: #6b6b6b;
+  --text-caption: #999;
+  --accent: #c49b6c;
+  --accent-soft: rgba(196,155,108,0.12);
+  --special-bg: rgba(196,155,108,0.10);
+  --special-border: #c49b6c;
+  --peak-bg: rgba(108,140,196,0.08);
+  --peak-border: #6c8cc4;
+  --divider: #e0e0e0;
+  --radius: 12px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+}
+
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+/* ========== 玻璃拟态主体 ========== */
+.page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-lg);
+}
+
+/* ========== 头部 ========== */
+.header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+.header h1 {
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+.header p {
+  font-size: clamp(14px, 1.8vw, 18px);
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+/* ========== 控制区 ========== */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+  flex-wrap: wrap;
+}
+.controls label {
+  font-size: 15px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.controls select {
+  padding: 10px 16px;
+  font-size: 15px;
+  border: 1px solid var(--divider);
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  backdrop-filter: blur(8px);
+  color: var(--text-primary);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.controls select:focus { border-color: var(--accent); }
+.controls button {
+  padding: 10px 28px;
+  font-size: 15px;
+  font-weight: 500;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+.controls button:hover { opacity: 0.85; }
+.controls button:active { transform: scale(0.97); }
+
+/* ========== 加载 & 错误 ========== */
+.loading, .error {
+  text-align: center;
+  padding: var(--spacing-2xl);
+}
+.loading { color: var(--text-secondary); font-size: 16px; }
+.error { color: #c0392b; font-size: 16px; }
+
+/* ========== 表格 ========== */
+.table-wrap {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+thead th {
+  background: rgba(0,0,0,0.03);
+  font-weight: 510;
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: left;
+  padding: var(--spacing-md) var(--spacing-md);
+  border-bottom: 1px solid var(--divider);
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+tbody td {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  vertical-align: middle;
+}
+
+tbody tr:last-child td { border-bottom: none; }
+
+/* 特殊标记行 */
+.special-day td {
+  background: var(--special-bg);
+  border-bottom-color: var(--special-border);
+}
+.special-day:not(:last-child) td {
+  box-shadow: inset 0 -1px 0 var(--special-border);
+}
+.peak-day td {
+  background: var(--peak-bg);
+  border-bottom-color: var(--peak-border);
+}
+.peak-day:not(:last-child) td {
+  box-shadow: inset 0 -1px 0 var(--peak-border);
+}
+
+/* 备注标签 */
+.tag {
+  display: inline-block;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+.tag-gold { background: rgba(196,155,108,0.18); color: #8b6914; }
+.tag-blue { background: rgba(108,140,196,0.15); color: #3a5a8c; }
+
+/* ========== 月份标题 ========== */
+.month-title {
+  font-size: clamp(18px, 2.5vw, 28px);
+  font-weight: 600;
+  padding: var(--spacing-lg) var(--spacing-md) var(--spacing-sm);
+  letter-spacing: -0.01em;
+}
+
+/* ========== 数据说明 ========== */
+.note-box {
+  margin-top: var(--spacing-xl);
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+.note-box h3 {
+  font-size: 16px;
+  font-weight: 510;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+.note-box ul { padding-left: var(--spacing-lg); }
+.note-box li { margin-bottom: var(--spacing-xs); }
+.note-box strong { color: var(--text-primary); font-weight: 510; }
+
+/* ========== Footer ========== */
+.footer {
+  text-align: center;
+  margin-top: var(--spacing-2xl);
+  font-size: 13px;
+  color: var(--text-caption);
+}
+
+/* ========== 响应式 ========== */
+@media (max-width: 900px) {
+  .page { padding: var(--spacing-md); }
+  .controls { gap: var(--spacing-sm); }
+  table { font-size: 13px; }
+  thead th, tbody td { padding: var(--spacing-sm) var(--spacing-sm); }
+}
+@media (max-width: 640px) {
+  .controls { flex-direction: column; }
+  .controls select, .controls button { width: 100%; }
+  table { font-size: 12px; }
+  /* 小屏隐藏一些列 */
+  .col-paksha, .col-ist-end, .col-bjt-end, .col-datespan { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <h1>太阴日 · Tithi</h1>
+    <p>基于 Swiss Ephemeris 天文引擎的精确计算</p>
+  </div>
+
+  <div class="controls">
+    <label for="year">年份</label>
+    <select id="year">
+      <option value="2023">2023</option>
+      <option value="2024">2024</option>
+      <option value="2025">2025</option>
+      <option value="2026" selected>2026</option>
+      <option value="2027">2027</option>
+      <option value="2028">2028</option>
+    </select>
+    <label for="month">月份</label>
+    <select id="month">
+      <option value="1">1月</option><option value="2">2月</option><option value="3">3月</option>
+      <option value="4">4月</option><option value="5">5月</option><option value="6" selected>6月</option>
+      <option value="7">7月</option><option value="8">8月</option><option value="9">9月</option>
+      <option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
+    </select>
+    <button id="fetchBtn">获取数据</button>
+  </div>
+
+  <div id="table-container"><div class="loading">正在计算天文数据…</div></div>
+
+  <div class="note-box">
+    <h3>数据说明</h3>
+    <ul>
+      <li>计算引擎：<strong>Swiss Ephemeris</strong>（天文精度，误差 &lt; 1 角秒）</li>
+      <li>计算地点：<strong>新德里</strong>（28.61°N, 77.21°E），印度标准时间（IST, UTC+5:30）</li>
+      <li>时间转换：IST + 2.5 小时 = 北京时间</li>
+      <li>太阴日（Tithi）：月亮相对太阳移动 12° 的时间区间，时长在 19h59m～26h47m 之间</li>
+      <li><span class="tag tag-gold">太初之母祝福日</span> Saptami（初七）&amp; Navami（初九）— 特殊能量日</li>
+      <li><span class="tag tag-blue">满月/新月能量峰值</span> Purnima（满月）&amp; Amavasya（新月）— 能量峰值日</li>
+    </ul>
+  </div>
+
+  <div class="footer">Powered by astronomy-engine &amp; panchangam-js · 实时天文计算，无需网络请求</div>
+</div>
+
+<script type="module">
+import { findTithiTransitions, getSunrise, Observer, tithiNames } from 'https://esm.sh/@ishubhamx/panchangam-js@2.2.6';
+
+// ========== 常量 ==========
+const IST_OFFSET = 330; // minutes
+const BJT_OFFSET = 480; // minutes
+const IST_OBSERVER = new Observer(28.6139, 77.2090, 200);
+
+const PAKSHA_CN = { 'Shukla': '白半月', 'Krishna': '黑半月' };
+
+const TITHI_CN = [
+  'Pratipada（初一）', 'Dwitiya（初二）', 'Tritiya（初三）', 'Chaturthi（初四）',
+  'Panchami（初五）', 'Shashthi（初六）', 'Saptami（初七）', 'Ashtami（初八）',
+  'Navami（初九）', 'Dashami（初十）', 'Ekadashi（十一）', 'Dwadashi（十二）',
+  'Trayodashi（十三）', 'Chaturdashi（十四）', 'Purnima（满月）',
+  'Pratipada（初一）', 'Dwitiya（初二）', 'Tritiya（初三）', 'Chaturthi（初四）',
+  'Panchami（初五）', 'Shashthi（初六）', 'Saptami（初七）', 'Ashtami（初八）',
+  'Navami（初九）', 'Dashami（初十）', 'Ekadashi（十一）', 'Dwadashi（十二）',
+  'Trayodashi（十三）', 'Chaturdashi（十四）', 'Amavasya（新月）'
+];
+
+function getPaksha(index) { return index < 15 ? 'Shukla' : 'Krishna'; }
+function getTithiNumber(index) { return index < 15 ? index + 1 : index - 14; }
+
+// ========== 工具：IST/BJT 时间格式 ==========
+function formatDateTime(date, offsetMin) {
+  const d = new Date(date.getTime() + offsetMin * 60000);
+  const y = d.getUTCFullYear();
+  const mo = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const da = String(d.getUTCDate()).padStart(2, '0');
+  const h = String(d.getUTCHours()).padStart(2, '0');
+  const mi = String(d.getUTCMinutes()).padStart(2, '0');
+  return `${y}-${mo}-${da} ${h}:${mi}`;
+}
+
+function formatDuration(ms) {
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  return `${h}h${String(m).padStart(2, '0')}m`;
+}
+
+function formatDateSpan(start, end, offsetMin) {
+  const s = new Date(start.getTime() + offsetMin * 60000);
+  const e = new Date(end.getTime() + offsetMin * 60000);
+  const sMo = String(s.getUTCMonth() + 1).padStart(2, '0');
+  const sDa = String(s.getUTCDate()).padStart(2, '0');
+  const eMo = String(e.getUTCMonth() + 1).padStart(2, '0');
+  const eDa = String(e.getUTCDate()).padStart(2, '0');
+  if (sMo === eMo) return `${sMo}-${sDa}～${eDa}`;
+  return `${sMo}-${sDa}～${eMo}-${eDa}`;
+}
+
+// ========== 核心算法 ==========
+function getTithisForMonth(year, month) {
+  // 月份开始和结束的 UTC 时间（对应 IST 00:00）
+  // IST 00:00 = UTC 前一天的 18:30
+  const utcOffset = IST_OFFSET * 60000;
+  const monthStartLocal = new Date(Date.UTC(year, month - 1, 1));
+  const monthEndLocal = new Date(Date.UTC(year, month, 1)); // 下个月第一天
+
+  // 转换为 UTC 中的 IST 午夜
+  const monthStartUTC = new Date(monthStartLocal.getTime() - utcOffset);
+  const monthEndUTC = new Date(monthEndLocal.getTime() - utcOffset);
+
+  // 往前推 10 天确保捕获跨月 tithi
+  const searchStart = new Date(monthStartUTC.getTime() - 10 * 86400000);
+
+  // 用 findTithiTransitions 获取所有 tithi 边界
+  const transitions = findTithiTransitions(searchStart, monthEndUTC);
+
+  if (!transitions || transitions.length === 0) return [];
+
+  // 合并连续相同 tithi 的片段
+  const merged = [];
+  for (const t of transitions) {
+    if (merged.length > 0 && merged[merged.length - 1].index === t.index) {
+      // 扩展上一个 tithi 的结束时间
+      merged[merged.length - 1].endTime = t.endTime;
+    } else {
+      merged.push({
+        index: t.index,
+        name: tithiNames[t.index] || `Tithi ${t.index}`,
+        startTime: t.startTime,
+        endTime: t.endTime
+      });
+    }
+  }
+
+  // 过滤：只保留与目标月份有交集的 tithi
+  return merged.filter(t => t.endTime > monthStartUTC && t.startTime < monthEndUTC);
+}
+
+// ========== 生成表格 HTML ==========
+function renderTable(year, month) {
+  const container = document.getElementById('table-container');
+  container.innerHTML = '<div class="loading">正在计算天文数据…</div>';
+
+  try {
+    const tithis = getTithisForMonth(year, month);
+
+    if (tithis.length === 0) {
+      container.innerHTML = '<div class="error">未能计算到该月的 Tithi 数据</div>';
+      return;
+    }
+
+    const formatIST = d => formatDateTime(d, IST_OFFSET);
+    const formatBJT = d => formatDateTime(d, BJT_OFFSET);
+    const fmtDateSpan = (s, e) => formatDateSpan(s, e, BJT_OFFSET);
+
+    let html = `<div class="table-wrap">`;
+    html += `<div class="month-title">${year} 年 ${month} 月 · 印度太阴日（Tithi）精确时间表</div>`;
+    html += `<table>
+      <thead><tr>
+        <th>太阴日</th>
+        <th class="col-paksha">半月</th>
+        <th>IST 开始</th>
+        <th class="col-ist-end">IST 结束</th>
+        <th>北京时间开始</th>
+        <th class="col-bjt-end">北京时间结束</th>
+        <th>时长</th>
+        <th class="col-datespan">公历跨度</th>
+        <th>备注</th>
+      </tr></thead><tbody>`;
+
+    for (const t of tithis) {
+      const idx = t.index;
+      const paksha = getPaksha(idx);
+      const tnum = getTithiNumber(idx);
+      const durationMs = t.endTime.getTime() - t.startTime.getTime();
+
+      let rowClass = '';
+      let note = '';
+      let tagClass = '';
+
+      // Saptami (7) & Navami (9) in Shukla or Krishna
+      if ((paksha === 'Shukla' && (tnum === 7 || tnum === 9)) ||
+          (paksha === 'Krishna' && (tnum === 7 || tnum === 9))) {
+        rowClass = 'special-day';
+        note = '太初之母祝福日';
+        tagClass = 'tag-gold';
+      }
+      // Purnima (idx 14) & Amavasya (idx 29)
+      if (idx === 14 || idx === 29) {
+        rowClass = 'peak-day';
+        note = idx === 14 ? '★ 满月能量峰值' : '★ 新月能量峰值';
+        tagClass = 'tag-blue';
+      }
+
+      html += `<tr class="${rowClass}">
+        <td>${t.name}</td>
+        <td class="col-paksha">${PAKSHA_CN[paksha]}</td>
+        <td>${formatIST(t.startTime)}</td>
+        <td class="col-ist-end">${formatIST(t.endTime)}</td>
+        <td>${formatBJT(t.startTime)}</td>
+        <td class="col-bjt-end">${formatBJT(t.endTime)}</td>
+        <td>${formatDuration(durationMs)}</td>
+        <td class="col-datespan">${fmtDateSpan(t.startTime, t.endTime)}</td>
+        <td>${note ? `<span class="tag ${tagClass}">${note}</span>` : ''}</td>
+      </tr>`;
+    }
+
+    html += `</tbody></table></div>`;
+    container.innerHTML = html;
+
+  } catch (err) {
+    container.innerHTML = `<div class="error">计算失败：${err.message}<br>请刷新页面重试</div>`;
+    console.error(err);
+  }
+}
+
+// ========== 初始化 ==========
+const yearSel = document.getElementById('year');
+const monthSel = document.getElementById('month');
+const fetchBtn = document.getElementById('fetchBtn');
+
+function doFetch() {
+  const y = parseInt(yearSel.value);
+  const m = parseInt(monthSel.value);
+  renderTable(y, m);
+}
+
+fetchBtn.addEventListener('click', doFetch);
+yearSel.addEventListener('change', doFetch);
+monthSel.addEventListener('change', doFetch);
+
+// 页面加载自动计算当前月份
+doFetch();
+</script>
+</body>
+</html>
