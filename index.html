@@ -243,7 +243,7 @@ tbody tr:last-child td { border-bottom: none; }
 
   <div class="header">
     <h1>太阴日 · Tithi</h1>
-    <p>基于 Swiss Ephemeris 天文引擎的精确计算</p>
+    <p>基于 VSOP87 行星理论的实时天文计算</p>
   </div>
 
   <div class="controls">
@@ -271,7 +271,7 @@ tbody tr:last-child td { border-bottom: none; }
   <div class="note-box">
     <h3>数据说明</h3>
     <ul>
-      <li>计算引擎：<strong>Swiss Ephemeris</strong>（天文精度，误差 &lt; 1 角秒）</li>
+      <li>计算引擎：<strong>astronomy-engine</strong>（VSOP87 理论，NASA JPL DE 同源算法）</li>
       <li>计算地点：<strong>新德里</strong>（28.61°N, 77.21°E），印度标准时间（IST, UTC+5:30）</li>
       <li>时间转换：IST + 2.5 小时 = 北京时间</li>
       <li>太阴日（Tithi）：月亮相对太阳移动 12° 的时间区间，时长在 19h59m～26h47m 之间</li>
@@ -284,12 +284,11 @@ tbody tr:last-child td { border-bottom: none; }
 </div>
 
 <script type="module">
-import { findTithiTransitions, getSunrise, Observer, tithiNames } from 'https://esm.sh/@ishubhamx/panchangam-js@2.2.6';
+import { findTithiTransitions, tithiNames } from 'https://esm.sh/@ishubhamx/panchangam-js@2.2.6';
 
 // ========== 常量 ==========
 const IST_OFFSET = 330; // minutes
 const BJT_OFFSET = 480; // minutes
-const IST_OBSERVER = new Observer(28.6139, 77.2090, 200);
 
 const PAKSHA_CN = { 'Shukla': '白半月', 'Krishna': '黑半月' };
 
