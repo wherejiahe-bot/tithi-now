@@ -234,7 +234,7 @@ tbody tr:last-child td { border-bottom: none; }
   .controls select, .controls button { width: 100%; }
   table { font-size: 12px; }
   /* 小屏隐藏一些列 */
-  .col-paksha, .col-ist-end, .col-bjt-end, .col-datespan { display: none; }
+  .col-paksha, .col-bjt-end, .col-datespan { display: none; }
 }
 </style>
 </head>
@@ -387,7 +387,6 @@ function renderTable(year, month) {
       return;
     }
 
-    const formatIST = d => formatDateTime(d, IST_OFFSET);
     const formatBJT = d => formatDateTime(d, BJT_OFFSET);
     const fmtDateSpan = (s, e) => formatDateSpan(s, e, BJT_OFFSET);
 
@@ -397,8 +396,6 @@ function renderTable(year, month) {
       <thead><tr>
         <th>太阴日</th>
         <th class="col-paksha">半月</th>
-        <th>IST 开始</th>
-        <th class="col-ist-end">IST 结束</th>
         <th>北京时间开始</th>
         <th class="col-bjt-end">北京时间结束</th>
         <th>时长</th>
@@ -433,8 +430,6 @@ function renderTable(year, month) {
       html += `<tr class="${rowClass}">
         <td>${t.name}</td>
         <td class="col-paksha">${PAKSHA_CN[paksha]}</td>
-        <td>${formatIST(t.startTime)}</td>
-        <td class="col-ist-end">${formatIST(t.endTime)}</td>
         <td>${formatBJT(t.startTime)}</td>
         <td class="col-bjt-end">${formatBJT(t.endTime)}</td>
         <td>${formatDuration(durationMs)}</td>
