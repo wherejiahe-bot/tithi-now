@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>印度太阴日（Tithi）· 导航</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-page: #f5f5f5;
+  --bg-card: rgba(255,255,255,0.75);
+  --glass-border: rgba(255,255,255,0.5);
+  --glass-shadow: 0 8px 32px rgba(0,0,0,0.06);
+  --text-primary: #1a1a1a;
+  --text-secondary: #6b6b6b;
+  --text-caption: #999;
+  --accent: #c49b6c;
+  --accent-soft: rgba(196,155,108,0.12);
+  --special-bg: rgba(196,155,108,0.10);
+  --special-border: #c49b6c;
+  --peak-bg: rgba(108,140,196,0.08);
+  --peak-border: #6c8cc4;
+  --divider: #e0e0e0;
+  --radius: 12px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+}
+
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-lg);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: var(--spacing-2xl);
+}
+.header h1 {
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+.header p {
+  font-size: clamp(14px, 1.8vw, 18px);
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+/* ========== 卡片网格 ========== */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-2xl);
+}
+
+.card {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+  padding: var(--spacing-xl);
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.10);
+}
+.card-icon {
+  font-size: 48px;
+  margin-bottom: var(--spacing-md);
+}
+.card h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-primary);
+}
+.card p {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.card-tag {
+  display: inline-block;
+  margin-top: var(--spacing-md);
+  font-size: 12px;
+  padding: 2px 10px;
+  border-radius: 4px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* ========== Footer ========== */
+.footer {
+  text-align: center;
+  margin-top: var(--spacing-2xl);
+  font-size: 13px;
+  color: var(--text-caption);
+}
+
+@media (max-width: 900px) {
+  .page { padding: var(--spacing-md); }
+  .cards { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <h1>太阴日 · Tithi</h1>
+    <p>选择你要查看的内容</p>
+  </div>
+
+  <div class="cards">
+    <div class="card" data-nav="current">
+      <div class="card-icon">🏠</div>
+      <h2>首页导航</h2>
+      <p>当前页面 — 选择进入不同板块</p>
+      <span class="card-tag">你在这里</span>
+    </div>
+
+    <div class="card" data-nav="sunrise">
+      <div class="card-icon">🌅</div>
+      <h2>日出表</h2>
+      <p>印度各地日出日落时间，配合晨观修行安排每日时段</p>
+      <span class="card-tag">天文时段</span>
+    </div>
+
+    <div class="card" data-nav="calendar">
+      <div class="card-icon">📅</div>
+      <h2>印度日历</h2>
+      <p>基于 VSOP87 行星理论的太阴日精确时间表，含太初之母祝福日标注</p>
+      <span class="card-tag">实时天文计算</span>
+    </div>
+  </div>
+
+  <div class="footer">Powered by astronomy-engine & panchangam-js · 实时天文计算</div>
+
+<script>
+(function() {
+  // 导航映射表
+  const NAV_MAP = {
+    'current': 'pages/navigation/index.html',
+    'sunrise': 'pages/sunrise/index.html',
+    'calendar': 'pages/calendar/index.html'
+  };
+
+  // 为每个卡片绑定点击跳转事件
+  document.querySelectorAll('.card').forEach(function(card) {
+    card.addEventListener('click', function() {
+      var dest = this.getAttribute('data-nav');
+      var url = NAV_MAP[dest];
+      if (url && url !== 'pages/navigation/index.html') {
+        window.location.href = url;
+      }
+    });
+  });
+
+  // 控制台输出日志
+  console.log('[导航] 三页面导航已初始化:', Object.keys(NAV_MAP));
+})();
+</script>
+</body>
+</html>

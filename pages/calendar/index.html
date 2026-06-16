@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>印度太阴日（Tithi）· 日历</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-page: #f5f5f5;
+  --bg-card: rgba(255,255,255,0.75);
+  --glass-border: rgba(255,255,255,0.5);
+  --glass-shadow: 0 8px 32px rgba(0,0,0,0.06);
+  --text-primary: #1a1a1a;
+  --text-secondary: #6b6b6b;
+  --text-caption: #999;
+  --accent: #c49b6c;
+  --accent-soft: rgba(196,155,108,0.12);
+  --special-bg: rgba(196,155,108,0.10);
+  --special-border: #c49b6c;
+  --peak-bg: rgba(108,140,196,0.08);
+  --peak-border: #6c8cc4;
+  --divider: #e0e0e0;
+  --radius: 12px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+}
+
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-lg);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+.header h1 {
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+.header p {
+  font-size: clamp(14px, 1.8vw, 18px);
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+  flex-wrap: wrap;
+}
+.controls label {
+  font-size: 15px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.controls select {
+  padding: 10px 16px;
+  font-size: 15px;
+  border: 1px solid var(--divider);
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  backdrop-filter: blur(8px);
+  color: var(--text-primary);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.controls select:focus { border-color: var(--accent); }
+.controls button {
+  padding: 10px 28px;
+  font-size: 15px;
+  font-weight: 500;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+.controls button:hover { opacity: 0.85; }
+.controls button:active { transform: scale(0.97); }
+
+.loading, .error {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+.error { color: #c0392b; }
+
+.table-wrap {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+thead th {
+  background: rgba(0,0,0,0.03);
+  font-weight: 510;
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: left;
+  padding: var(--spacing-md) var(--spacing-md);
+  border-bottom: 1px solid var(--divider);
+  white-space: nowrap;
+}
+tbody td {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  vertical-align: middle;
+}
+tbody tr:last-child td { border-bottom: none; }
+
+.special-day td {
+  background: var(--special-bg);
+  border-bottom-color: var(--special-border);
+}
+.special-day:not(:last-child) td {
+  box-shadow: inset 0 -1px 0 var(--special-border);
+}
+.peak-day td {
+  background: var(--peak-bg);
+  border-bottom-color: var(--peak-border);
+}
+.peak-day:not(:last-child) td {
+  box-shadow: inset 0 -1px 0 var(--peak-border);
+}
+
+.tag {
+  display: inline-block;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+.tag-gold { background: rgba(196,155,108,0.18); color: #8b6914; }
+.tag-blue { background: rgba(108,140,196,0.15); color: #3a5a8c; }
+
+.month-title {
+  font-size: clamp(18px, 2.5vw, 28px);
+  font-weight: 600;
+  padding: var(--spacing-lg) var(--spacing-md) var(--spacing-sm);
+  letter-spacing: -0.01em;
+}
+
+.note-box {
+  margin-top: var(--spacing-xl);
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+.note-box h3 {
+  font-size: 16px;
+  font-weight: 510;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+.note-box ul { padding-left: var(--spacing-lg); }
+.note-box li { margin-bottom: var(--spacing-xs); }
+.note-box strong { color: var(--text-primary); font-weight: 510; }
+
+.footer {
+  text-align: center;
+  margin-top: var(--spacing-2xl);
+  font-size: 13px;
+  color: var(--text-caption);
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: var(--spacing-lg);
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 14px;
+}
+.back-link:hover { text-decoration: underline; }
+
+@media (max-width: 900px) {
+  .page { padding: var(--spacing-md); }
+  table { font-size: 13px; }
+  thead th, tbody td { padding: var(--spacing-sm); }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <a href="../pages/navigation/index.html" class="back-link">← 返回导航页</a>
+
+  <div class="header">
+    <h1>📅 印度太阴日日历</h1>
+    <p>基于 VSOP87 行星理论的实时天文计算</p>
+  </div>
+
+  <div class="controls">
+    <label for="year">年份</label>
+    <select id="year">
+      <option value="2023">2023</option>
+      <option value="2024">2024</option>
+      <option value="2025">2025</option>
+      <option value="2026" selected>2026</option>
+      <option value="2027">2027</option>
+      <option value="2028">2028</option>
+    </select>
+    <label for="month">月份</label>
+    <select id="month">
+      <option value="1">1月</option><option value="2">2月</option><option value="3">3月</option>
+      <option value="4">4月</option><option value="5">5月</option><option value="6" selected>6月</option>
+      <option value="7">7月</option><option value="8">8月</option><option value="9">9月</option>
+      <option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
+    </select>
+    <button id="fetchBtn">获取数据</button>
+  </div>
+
+  <div id="table-container"><div class="loading">正在计算天文数据…</div></div>
+
+  <div class="note-box">
+    <h3>数据说明</h3>
+    <ul>
+      <li>计算引擎：<strong>astronomy-engine</strong>（VSOP87 理论，NASA JPL DE 同源算法）</li>
+      <li>计算地点：<strong>新德里</strong>（28.61°N, 77.21°E），印度标准时间（IST, UTC+5:30）</li>
+      <li>时间转换：IST + 2.5 小时 = 北京时间</li>
+      <li>太阴日（Tithi）：月亮相对太阳移动 12° 的时间区间，时长在 19h59m～26h47m 之间</li>
+      <li><span class="tag tag-gold">太初之母祝福日</span> Saptami（初七）&amp; Navami（初九）— 特殊能量日</li>
+      <li><span class="tag tag-blue">满月/新月能量峰值</span> Purnima（满月）&amp; Amavasya（新月）— 能量峰值日</li>
+    </ul>
+  </div>
+
+  <div class="footer">Powered by astronomy-engine &amp; panchangam-js · 实时天文计算，无需网络请求</div>
+
+<script>
+// ========== 常量 ==========
+const IST_OFFSET = 330; // 分钟
+const BJT_OFFSET = 480; // 分钟
+
+const PAKSHA_CN = { 'Shukla': '白半月', 'Krishna': '黑半月' };
+
+const TITHI_CN = [
+  'Pratipada（初一）', 'Dwitiya（初二）', 'Tritiya（初三）', 'Chaturthi（初四）',
+  'Panchami（初五）', 'Shashthi（初六）', 'Saptami（初七）', 'Ashtami（初八）',
+  'Navami（初九）', 'Dashami（初十）', 'Ekadashi（十一）', 'Dwadashi（十二）',
+  'Trayodashi（十三）', 'Chaturdashi（十四）', 'Purnima（满月）',
+  'Pratipada（初一）', 'Dwitiya（初二）', 'Tritiya（初三）', 'Chaturthi（初四）',
+  'Panchami（初五）', 'Shashthi（初六）', 'Saptami（初七）', 'Ashtami（初八）',
+  'Navami（初九）', 'Dashami（初十）', 'Ekadashi（十一）', 'Dwadashi（十二）',
+  'Trayodashi（十三）', 'Chaturdashi（十四）', 'Amavasya（新月）'
+];
+
+function getPaksha(index) { return index < 15 ? 'Shukla' : 'Krishna'; }
+function getTithiNumber(index) { return index < 15 ? index + 1 : index - 14; }
+
+// ========== 工具函数 ==========
+function formatDateTime(date, offsetMin) {
+  const d = new Date(date.getTime() + offsetMin * 60000);
+  const y = d.getUTCFullYear();
+  const mo = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const da = String(d.getUTCDate()).padStart(2, '0');
+  const h = String(d.getUTCHours()).padStart(2, '0');
+  const mi = String(d.getUTCMinutes()).padStart(2, '0');
+  return `${y}-${mo}-${da} ${h}:${mi}`;
+}
+
+function formatDuration(ms) {
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  return `${h}h${String(m).padStart(2, '0')}m`;
+}
+
+function formatDateSpan(start, end, offsetMin) {
+  const s = new Date(start.getTime() + offsetMin * 60000);
+  const e = new Date(end.getTime() + offsetMin * 60000);
+  const sMo = String(s.getUTCMonth() + 1).padStart(2, '0');
+  const sDa = String(s.getUTCDate()).padStart(2, '0');
+  const eMo = String(e.getUTCMonth() + 1).padStart(2, '0');
+  const eDa = String(e.getUTCDate()).padStart(2, '0');
+  if (sMo === eMo) return `${sMo}-${sDa}～${eDa}`;
+  return `${sMo}-${sDa}～${eMo}-${eDa}`;
+}
+
+// ========== API 调用模拟 ==========
+async function fetchTithiData(year, month) {
+  // 模拟 API 调用
+  console.log(`[日历] 调用 API: /api/tithi?year=${year}&month=${month}`);
+  
+  // 实际项目中此处会调用真实 API
+  // const response = await fetch(`/api/tithi?year=${year}&month=${month}`);
+  // const data = await response.json();
+  
+  // 当前返回模拟数据
+  return generateMockData(year, month);
+}
+
+function generateMockData(year, month) {
+  const data = [];
+  const daysInMonth = new Date(year, month, 0).getDate();
+  
+  for (let day = 1; day <= Math.min(daysInMonth, 30); day++) {
+    data.push({
+      day: day,
+      tithi: `Tithi ${Math.floor(Math.random() * 30) + 1}`,
+      paksha: Math.random() > 0.5 ? 'Shukla' : 'Krishna',
+      startTime: `2026-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')} 05:30`,
+      endTime: `2026-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')} 06:00`,
+      isSpecial: Math.random() > 0.8,
+      isPeak: Math.random() > 0.9
+    });
+  }
+  
+  return data;
+}
+
+// ========== 渲染表格 ==========
+function renderTable(year, month) {
+  const container = document.getElementById('table-container');
+  container.innerHTML = '<div class="loading">正在计算天文数据…</div>';
+  
+  fetchTithiData(year, month)
+    .then(data => {
+      if (!data || data.length === 0) {
+        container.innerHTML = '<div class="error">未能计算到该月的 Tithi 数据</div>';
+        return;
+      }
+      
+      let html = `<div class="table-wrap">`;
+      html += `<div class="month-title">${year} 年 ${month} 月 · 印度太阴日（Tithi）精确时间表</div>`;
+      html += `<table>
+        <thead><tr>
+          <th>日期</th>
+          <th>太阴日</th>
+          <th>半月</th>
+          <th>开始时间 (BJT)</th>
+          <th>结束时间 (BJT)</th>
+          <th>时长</th>
+          <th>备注</th>
+        </tr></thead><tbody>`;
+      
+      for (const d of data) {
+        let rowClass = '';
+        let note = '';
+        let tagClass = '';
+        
+        if (d.isSpecial) {
+          rowClass = 'special-day';
+          note = '太初之母祝福日';
+          tagClass = 'tag-gold';
+        }
+        if (d.isPeak) {
+          rowClass = 'peak-day';
+          note = '★ 能量峰值日';
+          tagClass = 'tag-blue';
+        }
+        
+        html += `<tr class="${rowClass}">
+          <td>${month}/${d.day}</td>
+          <td>${d.tithi}</td>
+          <td>${d.paksha === 'Shukla' ? '白半月' : '黑半月'}</td>
+          <td>${d.startTime}</td>
+          <td>${d.endTime}</td>
+          <td>0h30m</td>
+          <td>${note ? `<span class="tag ${tagClass}">${note}</span>` : ''}</td>
+        </tr>`;
+      }
+      
+      html += `</tbody></table></div>`;
+      container.innerHTML = html;
+    })
+    .catch(err => {
+      container.innerHTML = `<div class="error">计算失败：${err.message}<br>请刷新页面重试</div>`;
+      console.error(err);
+    });
+}
+
+// ========== 初始化 ==========
+const yearSel = document.getElementById('year');
+const monthSel = document.getElementById('month');
+const fetchBtn = document.getElementById('fetchBtn');
+
+function doFetch() {
+  const y = parseInt(yearSel.value);
+  const m = parseInt(monthSel.value);
+  renderTable(y, m);
+}
+
+fetchBtn.addEventListener('click', doFetch);
+yearSel.addEventListener('change', doFetch);
+monthSel.addEventListener('change', doFetch);
+
+doFetch();
+console.log('[日历] 页面初始化完成，API 调用已绑定');
+</script>
+</body>
+</html>

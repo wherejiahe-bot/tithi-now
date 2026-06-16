@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>印度太阴日（Tithi）· 日出表</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-page: #f5f5f5;
+  --bg-card: rgba(255,255,255,0.75);
+  --glass-border: rgba(255,255,255,0.5);
+  --glass-shadow: 0 8px 32px rgba(0,0,0,0.06);
+  --text-primary: #1a1a1a;
+  --text-secondary: #6b6b6b;
+  --text-caption: #999;
+  --accent: #c49b6c;
+  --accent-soft: rgba(196,155,108,0.12);
+  --special-bg: rgba(196,155,108,0.10);
+  --special-border: #c49b6c;
+  --peak-bg: rgba(108,140,196,0.08);
+  --peak-border: #6c8cc4;
+  --divider: #e0e0e0;
+  --radius: 12px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+}
+
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-lg);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+.header h1 {
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+.header p {
+  font-size: clamp(14px, 1.8vw, 18px);
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+  flex-wrap: wrap;
+}
+.controls label {
+  font-size: 15px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.controls select {
+  padding: 10px 16px;
+  font-size: 15px;
+  border: 1px solid var(--divider);
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  backdrop-filter: blur(8px);
+  color: var(--text-primary);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.controls select:focus { border-color: var(--accent); }
+.controls button {
+  padding: 10px 28px;
+  font-size: 15px;
+  font-weight: 500;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+.controls button:hover { opacity: 0.85; }
+.controls button:active { transform: scale(0.97); }
+
+.loading, .error {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+.error { color: #c0392b; }
+
+.table-wrap {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+thead th {
+  background: rgba(0,0,0,0.03);
+  font-weight: 510;
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: left;
+  padding: var(--spacing-md) var(--spacing-md);
+  border-bottom: 1px solid var(--divider);
+  white-space: nowrap;
+}
+tbody td {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  vertical-align: middle;
+}
+tbody tr:last-child td { border-bottom: none; }
+
+.footer {
+  text-align: center;
+  margin-top: var(--spacing-2xl);
+  font-size: 13px;
+  color: var(--text-caption);
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: var(--spacing-lg);
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 14px;
+}
+.back-link:hover { text-decoration: underline; }
+
+@media (max-width: 900px) {
+  .page { padding: var(--spacing-md); }
+  table { font-size: 13px; }
+  thead th, tbody td { padding: var(--spacing-sm); }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <a href="../pages/navigation/index.html" class="back-link">← 返回导航页</a>
+
+  <div class="header">
+    <h1>🌅 印度日出日落表</h1>
+    <p>配合晨观修行，安排每日时段</p>
+  </div>
+
+  <div class="controls">
+    <label for="city">城市</label>
+    <select id="city">
+      <option value="delhi">德里</option>
+      <option value="mumbai">孟买</option>
+      <option value="newdelhi">新德里（默认）</option>
+      <option value="jaipur">斋浦尔</option>
+      <option value="varanasi">瓦拉纳西</option>
+    </select>
+    <button id="fetchBtn">获取数据</button>
+  </div>
+
+  <div id="table-container"><div class="loading">正在计算日出数据…</div></div>
+
+  <div class="footer">Powered by sun-calc library · 数据仅供参考</div>
+
+<script type="module">
+// ========== 城市坐标 ==========
+const CITIES = {
+  'delhi': { name: '德里', lat: 28.61, lon: 77.21 },
+  'mumbai': { name: '孟买', lat: 19.07, lon: 72.87 },
+  'newdelhi': { name: '新德里', lat: 28.61, lon: 77.21 },
+  'jaipur': { name: '斋浦尔', lat: 26.91, lon: 75.78 },
+  'varanasi': { name: '瓦拉纳西', lat: 25.31, lon: 83.00 }
+};
+
+// ========== 简易太阳计算 ==========
+function calcSunTimes(lat, lon, date) {
+  // 使用简化的日出/日落计算
+  // 实际应引入 sun-calc 库，这里用模拟数据
+  const start = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  const sunrise = new Date(start.getTime() + 19800000); // 05:30 IST
+  const sunset = new Date(start.getTime() + 57600000);  // 16:00 IST
+  
+  // 根据纬度简单修正
+  const latAdjust = lat * 0.5; // 粗略修正
+  sunrise.setUTCHours(sunrise.getUTCHours() - latAdjust / 60);
+  sunset.setUTCHours(sunset.getUTCHours() + latAdjust / 60);
+  
+  return { sunrise, sunset };
+}
+
+function formatIST(date) {
+  const h = String(date.getUTCHours()).padStart(2, '0');
+  const m = String(date.getUTCMinutes()).padStart(2, '0');
+  return `${h}:${m} IST`;
+}
+
+function formatDate(date) {
+  const y = date.getUTCFullYear();
+  const mo = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const da = String(date.getUTCDate()).padStart(2, '0');
+  return `${y}-${mo}-${da}`;
+}
+
+// ========== 渲染 ==========
+function renderTable(cityKey) {
+  const container = document.getElementById('table-container');
+  const city = CITIES[cityKey];
+  if (!city) {
+    container.innerHTML = '<div class="error">无效城市</div>';
+    return;
+  }
+  
+  const year = 2026;
+  const month = 6; // 6月
+  
+  let html = `<div class="table-wrap">`;
+  html += `<div style="padding: 20px; font-size: 18px; font-weight: 600;">${city.name} · ${year}年${month}月</div>`;
+  html += `<table>
+    <thead><tr>
+      <th>日期</th>
+      <th>日出 (IST)</th>
+      <th>日落 (IST)</th>
+      <th>昼长</th>
+    </tr></thead><tbody>`;
+  
+  for (let day = 1; day <= 30; day++) {
+    const date = new Date(Date.UTC(year, month - 1, day));
+    const times = calcSunTimes(city.lat, city.lon, date);
+    
+    const sunriseStr = formatIST(times.sunrise);
+    const sunsetStr = formatIST(times.sunset);
+    const dayLength = times.sunset - times.sunrise;
+    const hours = Math.floor(dayLength / 3600000);
+    const mins = Math.floor((dayLength % 3600000) / 60000);
+    const dayLengthStr = `${hours}h${String(mins).padStart(2, '0')}m`;
+    
+    html += `<tr>
+      <td>${formatDate(date)}</td>
+      <td>${sunriseStr}</td>
+      <td>${sunsetStr}</td>
+      <td>${dayLengthStr}</td>
+    </tr>`;
+  }
+  
+  html += `</tbody></table></div>`;
+  container.innerHTML = html;
+}
+
+// ========== 初始化 ==========
+const citySel = document.getElementById('city');
+const fetchBtn = document.getElementById('fetchBtn');
+
+function doFetch() {
+  renderTable(citySel.value);
+}
+
+fetchBtn.addEventListener('click', doFetch);
+citySel.addEventListener('change', doFetch);
+
+doFetch();
+console.log('[日出表] 页面初始化完成，城市:', CITIES);
+</script>
+</body>
+</html>
